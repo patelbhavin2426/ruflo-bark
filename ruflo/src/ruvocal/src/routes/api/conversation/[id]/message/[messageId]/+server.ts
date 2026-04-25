@@ -12,7 +12,7 @@ export async function DELETE({ locals, params }) {
 
 	const conversation = await collections.conversations.findOne({
 		...authCondition(locals),
-		_id: new ObjectId(params.id),
+		_id: { $eq: new ObjectId(params.id) },
 	});
 
 	if (!conversation) {
@@ -34,7 +34,7 @@ export async function DELETE({ locals, params }) {
 		});
 
 	await collections.conversations.updateOne(
-		{ _id: conversation._id, ...authCondition(locals) },
+		{ _id: { $eq: conversation._id }, ...authCondition(locals) },
 		{ $set: { messages: filteredMessages } }
 	);
 

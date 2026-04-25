@@ -22,7 +22,7 @@ export async function resolveConversation(
 	if (id.length === 7) {
 		// shared link of length 7
 		conversation = await collections.sharedConversations.findOne({
-			_id: id,
+			_id: { $eq: id },
 		});
 		shared = true;
 		if (!conversation) {
