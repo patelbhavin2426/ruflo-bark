@@ -760,6 +760,9 @@ export class SparcArchitecture extends SparcPhase {
     // Create a view for active entities
     for (const entity of entities) {
       if (entity.attributes.some((attr) => attr.name === 'is_active' || attr.name === 'status')) {
+        if (!/^[a-zA-Z0-9_]+$/.test(entity.name)) {
+          throw new Error('Invalid input');
+        }
         views.push({
           name: `active_${entity.name.toLowerCase()}s`,
           definition: `SELECT * FROM ${entity.name} WHERE ${entity.attributes.some((attr) => attr.name === 'is_active') ? 'is_active = true' : "status = 'active'"}`,
