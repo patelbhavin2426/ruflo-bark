@@ -69,10 +69,10 @@
     "agentic-flow": "^2.0.7"
   },
   "overrides": {
-    "axios@<=1.15.0": "1.15.0",
     "hono": "4.12.4",
     "protobufjs@<=7.5.5": "7.5.5",
-    "undici@<=7.24.0": "7.24.0"
+    "undici@<=7.24.0": "7.24.0",
+    "axios@<=1.15.1": "1.15.1"
   },
   "devDependencies": {
     "@openai/codex": "^0.98.0",
