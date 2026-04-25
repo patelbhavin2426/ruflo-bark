@@ -4,7 +4,7 @@
  * Orchestrates parallel training of 5 specialized models with memory coordination
  */
 
-const { execSync } = require('child_process');
+const { execSync, execFileSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 
@@ -39,8 +39,8 @@ class TrainingCoordinator {
     }
 
     // Validate schema and count patterns
-    const result = execSync(
-      `sqlite3 ${dbPath} "SELECT COUNT(*) FROM patterns"`,
+    const result = execFileSync(
+      'sqlite3', [dbPath, 'SELECT COUNT(*) FROM patterns'],
       { encoding: 'utf-8' }
     );
 
@@ -51,7 +51,7 @@ class TrainingCoordinator {
 
   async reportProgress(modelName, progress) {
     // Store progress in shared memory
-    execSync(`npx claude-flow@alpha memory store swarm/progress/${modelName} "${JSON.stringify(progress)}" --namespace training --reasoningbank`, { stdio: 'inherit' });
+    execFileSync('npx', ['claude-flow@alpha', 'memory', 'store', `swarm/progress/${modelName}`, JSON.stringify(progress), '--namespace', 'training', '--reasoningbank'], { stdio: 'inherit' });
   }
 
   async getSwarmStatus() {
