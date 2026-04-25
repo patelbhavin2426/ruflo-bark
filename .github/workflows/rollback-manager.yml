@@ -63,10 +63,15 @@ jobs:
 
       - name: Detect failure conditions
         id: detect
+        env:
+          GITHUB_SHA: ${{ github.sha }}
+          GITHUB_EVENT_NAME: ${{ github.event_name }}
+          WORKFLOW_RUN_CONCLUSION: ${{ github.event.workflow_run.conclusion }}
+          WORKFLOW_RUN_NAME: ${{ github.event.workflow_run.name }}
         run: |
           echo "🚨 Analyzing failure conditions..."
           
-          ROLLBACK_SESSION="rollback-$(date +%Y%m%d-%H%M%S)-${{ github.sha }}"
+          ROLLBACK_SESSION="rollback-$(date +%Y%m%d-%H%M%S)-$GITHUB_SHA"
           echo "rollback-session-id=$ROLLBACK_SESSION" >> $GITHUB_OUTPUT
           
           ROLLBACK_REQUIRED="false"
@@ -75,9 +80,9 @@ jobs:
           ROLLBACK_TARGET=""
           
           # Check workflow run results if triggered by workflow_run
-          if [ "${{ github.event_name }}" = "workflow_run" ]; then
-            WORKFLOW_CONCLUSION="${{ github.event.workflow_run.conclusion }}"
-            WORKFLOW_NAME="${{ github.event.workflow_run.name }}"
+          if [ "$GITHUB_EVENT_NAME" = "workflow_run" ]; then
+            WORKFLOW_CONCLUSION="$WORKFLOW_RUN_CONCLUSION"
+            WORKFLOW_NAME="$WORKFLOW_RUN_NAME"
             
             echo "Workflow: $WORKFLOW_NAME"
             echo "Conclusion: $WORKFLOW_CONCLUSION"
@@ -376,14 +381,17 @@ jobs:
 
       - name: Push rollback commit
         if: steps.rollback.outputs.rollback-executed == 'true'
+        env:
+          EMERGENCY_MODE: ${{ github.event.inputs.emergency_mode }}
+          REF_NAME: ${{ github.ref_name }}
         run: |
           echo "📤 Pushing rollback commit..."
           
           # Force push the rollback (use with caution)
-          if [ "${{ github.event.inputs.emergency_mode }}" = "true" ]; then
-            git push origin HEAD:${{ github.ref_name }} --force-with-lease
+          if [ "$EMERGENCY_MODE" = "true" ]; then
+            git push origin HEAD:$REF_NAME --force-with-lease
           else
-            git push origin HEAD:${{ github.ref_name }}
+            git push origin HEAD:$REF_NAME
           fi
           
           echo "✅ Rollback pushed successfully"
