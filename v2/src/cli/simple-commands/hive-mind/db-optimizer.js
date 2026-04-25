@@ -801,6 +801,9 @@ export async function generateOptimizationReport(dbPath) {
       .all();
 
     for (const table of tables) {
+      if (!/^[a-zA-Z0-9_]+$/.test(table.name)) {
+        throw new Error('Invalid input');
+      }
       const count = db.prepare(`SELECT COUNT(*) as count FROM ${table.name}`).get();
       const size = db
         .prepare(

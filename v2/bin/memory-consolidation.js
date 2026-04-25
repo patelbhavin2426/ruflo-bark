@@ -351,6 +351,9 @@ export class MemoryConsolidator {
       try {
         // Attach the source database
         const alias = `db_${path.basename(dbFile, '.db')}`;
+        if (!/^[a-zA-Z0-9_]+$/.test(alias)) {
+          throw new Error('Invalid input');
+        }
         await db.exec(`ATTACH DATABASE '${dbFile}' AS ${alias}`);
         
         // Get tables from source database
@@ -362,17 +365,20 @@ export class MemoryConsolidator {
         // Copy data from each memory-related table
         for (const table of tables) {
           try {
-            await db.exec(`
+            if (!/^[a-zA-Z0-9_]+$/.test(table.name)) {
+              throw new Error('Invalid input');
+            }
+            await db.run(`
               INSERT OR IGNORE INTO memory_entries (key, value, namespace, timestamp, source)
               SELECT 
                 COALESCE(key, ''), 
                 COALESCE(value, ''), 
                 COALESCE(namespace, 'default'),
                 COALESCE(timestamp, strftime('%s', 'now') * 1000),
-                '${dbFile}'
+                $dbFile
               FROM ${alias}.${table.name}
               WHERE key IS NOT NULL AND value IS NOT NULL
-            `);
+            `, { $dbFile: dbFile });
           } catch (err) {
             // Table structure might be different, skip
           }
