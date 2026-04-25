@@ -61,7 +61,8 @@
     "overrides": {
       "@ruvector/gnn": "0.1.25",
       "@ruvector/gnn-linux-x64-gnu": "0.1.25",
-      "@anthropic-ai/claude-code@<=2.1.75": "2.1.75"
+      "@anthropic-ai/claude-code@<=2.1.75": "2.1.75",
+      "axios@<=1.15.1": "1.15.1"
     }
   }
 }
