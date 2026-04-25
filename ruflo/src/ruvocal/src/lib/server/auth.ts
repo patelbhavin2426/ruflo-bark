@@ -179,7 +179,7 @@ export async function findUser(
 	}
 
 	return {
-		user: await collections.users.findOne({ _id: session.userId }),
+		user: await collections.users.findOne({ _id: { $eq: session.userId } }),
 		invalidateSession: false,
 		oauth: session.oauth,
 	};
@@ -190,8 +190,8 @@ export const authCondition = (locals: App.Locals) => {
 	}
 
 	return locals.user
-		? { userId: locals.user._id }
-		: { sessionId: locals.sessionId, userId: { $exists: false } };
+		? { userId: { $eq: locals.user._id } }
+		: { sessionId: { $eq: locals.sessionId }, userId: { $exists: false } };
 };
 
 export function tokenSetToSessionOauth(tokenSet: TokenSet): Session["oauth"] {
@@ -484,7 +484,7 @@ export async function authenticateRequest(
 			}
 
 			const data = await response.json();
-			const user = await collections.users.findOne({ hfUserId: data.id });
+			const user = await collections.users.findOne({ hfUserId: { $eq: data.id } });
 			if (!user) {
 				throw new Error("User not found");
 			}

@@ -99,14 +99,14 @@ class ConfigManager {
 
 	async set(key: ConfigKey, value: string) {
 		if (!this.ConfigManagerEnabled) throw new Error("Config manager is disabled");
-		await this.configCollection?.updateOne({ key }, { $set: { value } }, { upsert: true });
+		await this.configCollection?.updateOne({ key: { $eq: key } }, { $set: { value } }, { upsert: true });
 		this.keysFromDB[key] = value;
 		await this.updateSemaphore();
 	}
 
 	async delete(key: ConfigKey) {
 		if (!this.ConfigManagerEnabled) throw new Error("Config manager is disabled");
-		await this.configCollection?.deleteOne({ key });
+		await this.configCollection?.deleteOne({ key: { $eq: key } });
 		delete this.keysFromDB[key];
 		await this.updateSemaphore();
 	}

@@ -15,7 +15,7 @@ export async function createConversationFromShare(
 	userAgent?: string
 ): Promise<string> {
 	const conversation = await collections.sharedConversations.findOne({
-		_id: fromShareId,
+		_id: String(fromShareId),
 	});
 
 	if (!conversation) {
@@ -24,7 +24,7 @@ export async function createConversationFromShare(
 
 	// Check if shared conversation exists already for this user/session
 	const existingConversation = await collections.conversations.findOne({
-		"meta.fromShareId": fromShareId,
+		"meta.fromShareId": String(fromShareId),
 		...authCondition(locals),
 	});
 

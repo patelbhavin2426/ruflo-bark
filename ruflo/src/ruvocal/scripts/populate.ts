@@ -203,7 +203,7 @@ async function seed() {
 				);
 				await collections.assistants.insertMany(assistants);
 				await collections.settings.updateOne(
-					{ userId: user._id },
+					{ userId: { $eq: user._id } },
 					{ $set: { assistants: assistants.map((a) => a._id.toString()) } },
 					{ upsert: true }
 				);
