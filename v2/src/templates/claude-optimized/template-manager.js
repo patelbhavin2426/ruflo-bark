@@ -2,7 +2,7 @@
 
 const fs = require('fs');
 const path = require('path');
-const { execSync } = require('child_process');
+const { execSync, execFileSync } = require('child_process');
 
 /**
  * Claude Optimized Template Manager
@@ -17,7 +17,7 @@ const commands = {
       console.error('Usage: template-manager deploy <target-project-path>');
       process.exit(1);
     }
-    execSync(`node deploy-to-project.js "${targetPath}"`, { stdio: 'inherit' });
+    execFileSync('node', ['deploy-to-project.js', targetPath], { stdio: 'inherit' });
   },
   info: () => {
     const manifest = JSON.parse(fs.readFileSync('manifest.json', 'utf8'));

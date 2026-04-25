@@ -6,7 +6,7 @@
 
 import { printSuccess, printError, printWarning, printInfo } from '../utils.js';
 import { githubAPI } from './github-api.js';
-import { execSync } from 'child_process';
+import { execSync, execFileSync } from 'child_process';
 
 class GitHubCoordinator {
   constructor() {
@@ -130,7 +130,7 @@ class GitHubCoordinator {
       printInfo(`Executing step: ${step}`);
 
       // Pre-step hook
-      execSync(`npx ruv-swarm hook pre-task --description "GitHub step: ${step}"`);
+      execFileSync('npx', ['ruv-swarm', 'hook', 'pre-task', '--description', `GitHub step: ${step}`]);
 
       // Execute step
       await this.executeCoordinationStep(coordinationPlan, step);
@@ -142,8 +142,8 @@ class GitHubCoordinator {
     }
 
     // Final coordination notification
-    execSync(
-      `npx ruv-swarm hook notification --message "GitHub Coordination: ${coordinationPlan.type} completed" --telemetry true`,
+    execFileSync(
+      'npx', ['ruv-swarm', 'hook', 'notification', '--message', `GitHub Coordination: ${coordinationPlan.type} completed`, '--telemetry', 'true'],
     );
   }
 
