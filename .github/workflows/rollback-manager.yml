@@ -4,7 +4,7 @@ on:
   workflow_run:
     workflows: ["🔍 Verification Pipeline", "🎯 Truth Scoring Pipeline", "🔗 Cross-Agent Integration Tests"]
     types: [completed]
-    branches: [main, develop]
+    branches: [main]
   push:
     branches: [main]
   workflow_dispatch:
